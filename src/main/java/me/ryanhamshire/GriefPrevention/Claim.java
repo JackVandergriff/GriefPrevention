@@ -68,6 +68,9 @@ public class Claim
 	// intended for subclaims - they inherit no permissions
 	private boolean inheritNothing = false;
 
+	// Property for 3d subclaims
+	public boolean is3d = false;
+
 	//children (subdivisions)
 	//note subdivisions themselves never have children
 	public ArrayList<Claim> children = new ArrayList<Claim>();
@@ -705,7 +708,9 @@ public class Claim
 				x >= this.lesserBoundaryCorner.getX() &&
 				x < this.greaterBoundaryCorner.getX() + 1 &&
 				z >= this.lesserBoundaryCorner.getZ() &&
-				z < this.greaterBoundaryCorner.getZ() + 1;
+				z < this.greaterBoundaryCorner.getZ() + 1 &&
+				(!is3d || y >= this.lesserBoundaryCorner.getY()) &&
+				(!is3d || y <= this.greaterBoundaryCorner.getY());
 				
 		if(!inClaim) return false;
 				
@@ -742,19 +747,35 @@ public class Claim
 	{
 		//NOTE:  if trying to understand this makes your head hurt, don't feel bad - it hurts mine too.  
 		//try drawing pictures to visualize test cases.
+
+		// Only check 3d areas if both are 3d, else it doesn't matter
+		boolean check3d = (this.is3d && otherClaim.is3d)
 		
 		if(!this.lesserBoundaryCorner.getWorld().equals(otherClaim.getLesserBoundaryCorner().getWorld())) return false;
-		
+
 		//first, check the corners of this claim aren't inside any existing claims
 		if(otherClaim.contains(this.lesserBoundaryCorner, true, false)) return true;
 		if(otherClaim.contains(this.greaterBoundaryCorner, true, false)) return true;
-		if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.lesserBoundaryCorner.getBlockX(), 0, this.greaterBoundaryCorner.getBlockZ()), true, false)) return true;
-		if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.greaterBoundaryCorner.getBlockX(), 0, this.lesserBoundaryCorner.getBlockZ()), true, false)) return true;
+
+		if (check3d) {
+			// New check for all corners on the claim
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.lesserBoundaryCorner.getX(), this.lesserBoundaryCorner.getY(), this.greaterBoundaryCorner.getZ()), false, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.lesserBoundaryCorner.getX(), this.greaterBoundaryCorner.getY(), this.lesserBoundaryCorner.getZ()), false, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.greaterBoundaryCorner.getX(), this.lesserBoundaryCorner.getY(), this.lesserBoundaryCorner.getZ()), false, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.lesserBoundaryCorner.getX(), this.greaterBoundaryCorner.getY(), this.greaterBoundaryCorner.getZ()), false, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.greaterBoundaryCorner.getX(), this.lesserBoundaryCorner.getY(), this.greaterBoundaryCorner.getZ()), false, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.greaterBoundaryCorner.getX(), this.greaterBoundaryCorner.getY(), this.lesserBoundaryCorner.getZ()), false, false)) return true;
+		} else {
+			// Old check for non-3d claims
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.lesserBoundaryCorner.getBlockX(), 0, this.greaterBoundaryCorner.getBlockZ()), true, false)) return true;
+			if(otherClaim.contains(new Location(this.lesserBoundaryCorner.getWorld(), this.greaterBoundaryCorner.getBlockX(), 0, this.lesserBoundaryCorner.getBlockZ()), true, false)) return true;
+		}
 		
 		//verify that no claim's lesser boundary point is inside this new claim, to cover the "existing claim is entirely inside new claim" case
 		if(this.contains(otherClaim.getLesserBoundaryCorner(), true, false)) return true;
 		
 		//verify this claim doesn't band across an existing claim, either horizontally or vertically		
+		// TODO add the stupid checks for 3d banding
 		if(	this.getLesserBoundaryCorner().getBlockZ() <= otherClaim.getGreaterBoundaryCorner().getBlockZ() && 
 			this.getLesserBoundaryCorner().getBlockZ() >= otherClaim.getLesserBoundaryCorner().getBlockZ() && 
 			this.getLesserBoundaryCorner().getBlockX() < otherClaim.getLesserBoundaryCorner().getBlockX() &&
@@ -868,6 +889,10 @@ public class Claim
 		
 		if(thisCorner.getBlockZ() < otherCorner.getBlockZ()) return false;
 		
+		if(thisCorner.getBlockY() > otherCorner.getBlockY()) return true;
+		
+		if(thisCorner.getBlockY() < otherCorner.getBlockY()) return false;
+
 		return thisCorner.getWorld().getName().compareTo(otherCorner.getWorld().getName()) < 0;
 	}
 	
