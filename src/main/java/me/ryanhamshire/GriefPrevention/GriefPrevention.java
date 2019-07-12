@@ -1930,6 +1930,18 @@ public class GriefPrevention extends JavaPlugin
 			
 			return true;
 		}
+
+		//verticalclaims
+		else if(cmd.getName().equalsIgnoreCase("verticalclaims") && player != null)
+		{
+			PlayerData playerData = this.dataStore.getPlayerData(player.getUniqueId());
+			playerData.shovelMode = ShovelMode.Vertical;
+			playerData.claimSubdividing = null;
+			// GriefPrevention.sendMessage(player, TextMode.Instr, Messages.SubdivisionMode);
+			// GriefPrevention.sendMessage(player, TextMode.Instr, Messages.SubdivisionVideo2, DataStore.SUBDIVISION_VIDEO_URL);
+			
+			return true;
+		}
 		
 		//deleteclaim
 		else if(cmd.getName().equalsIgnoreCase("deleteclaim") && player != null)

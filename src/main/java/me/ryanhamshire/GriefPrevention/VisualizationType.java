@@ -22,7 +22,8 @@ package me.ryanhamshire.GriefPrevention;
 public enum VisualizationType 
 {
 	Claim,
-	Subdivision,
+    Subdivision,
+    Vertical,
 	ErrorClaim,
 	RestoreNature,
 	AdminClaim

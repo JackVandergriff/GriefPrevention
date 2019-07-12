@@ -749,7 +749,7 @@ public class Claim
 		//try drawing pictures to visualize test cases.
 
 		// Only check 3d areas if both are 3d, else it doesn't matter
-		boolean check3d = (this.is3d && otherClaim.is3d)
+		boolean check3d = (this.is3d && otherClaim.is3d);
 		
 		if(!this.lesserBoundaryCorner.getWorld().equals(otherClaim.getLesserBoundaryCorner().getWorld())) return false;
 

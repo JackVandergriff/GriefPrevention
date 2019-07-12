@@ -165,6 +165,12 @@ public class Visualization
 			accentBlockData = Material.WHITE_WOOL.createBlockData();
 		}
 		
+		else if(visualizationType == VisualizationType.Vertical) // Add materials for 3d claims
+		{
+			cornerBlockData = Material.SEA_LANTERN.createBlockData();
+			accentBlockData = Material.PRISMARINE_BRICKS.createBlockData();
+		}
+
 		else if(visualizationType == VisualizationType.RestoreNature)
 		{
 			cornerBlockData = Material.DIAMOND_BLOCK.createBlockData();
@@ -245,8 +251,10 @@ public class Visualization
 		//set Y values and real block information for any remaining visualization blocks
 		for(VisualizationElement element : newElements)
 		{
-		    Location tempLocation = element.location;
-		    element.location = getVisibleLocation(tempLocation.getWorld(), tempLocation.getBlockX(), height, tempLocation.getBlockZ(), waterIsTransparent);
+			Location tempLocation = element.location;
+			if (visualizationType != VisualizationType.Vertical) {
+				element.location = getVisibleLocation(tempLocation.getWorld(), tempLocation.getBlockX(), height, tempLocation.getBlockZ(), waterIsTransparent);
+			}
 		    height = element.location.getBlockY();
 		    element.realBlock = element.location.getBlock().getBlockData();
 		}

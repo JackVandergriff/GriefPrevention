@@ -23,7 +23,8 @@ public enum ShovelMode
 {
 	Basic,
 	Admin,
-	Subdivide,
+    Subdivide,
+    Vertical,
 	RestoreNature,
 	RestoreNatureAggressive,
 	RestoreNatureFill
